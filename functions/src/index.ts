@@ -22,7 +22,7 @@ export const mergeAudio = onRequest(async (request, response) => {
     const mergeAudioResponse = await fetch(mergeAudioUrl, {
         method: "POST",
         body: JSON.stringify({ track1, track2 }),
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
     });
 
     if (!mergeAudioResponse.ok) {
@@ -31,6 +31,7 @@ export const mergeAudio = onRequest(async (request, response) => {
         return;
     } else {
         logger.info("Successfully merged audio", { structuredData: true });
-        response.send(mergeAudioResponse.body);
+        const res = await mergeAudioResponse.json();
+        response.json(res);
     }
 });
