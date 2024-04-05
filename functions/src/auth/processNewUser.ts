@@ -1,6 +1,9 @@
 import { UserRecord } from "firebase-admin/auth";
-import functions = require('firebase-functions');
-import admin = require('firebase-admin');
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+import * as logger from "firebase-functions/logger";
+
+const { FieldValue } = require("firebase-admin/firestore");
 
 admin.initializeApp();
 
@@ -14,10 +17,9 @@ export const processNewUser = functions.auth.user().onCreate((user: UserRecord) 
     userDocRef.set({
         email,
         displayName,
-        joinedAt: admin.firestore.FieldValue.serverTimestamp(),
+        uid,
+        registratedAt: FieldValue.serverTimestamp()
     });
 
-    userDocRef.collection('podcastAds');
-
-    console.log('New user created:', email, displayName, uid);
+    logger.info('New user created:', uid, displayName, email, { structuredData: true });
 });
