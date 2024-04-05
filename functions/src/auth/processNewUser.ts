@@ -1,9 +1,9 @@
 import { UserRecord } from "firebase-admin/auth";
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 
-const { FieldValue } = require("firebase-admin/firestore");
+import { FieldValue } from "firebase-admin/firestore";
 
 admin.initializeApp();
 
@@ -12,14 +12,14 @@ export const processNewUser = functions.auth.user().onCreate((user: UserRecord) 
     const displayName = user.displayName;
     const uid = user.uid;
 
-    const userDocRef = admin.firestore().collection('users').doc(uid);
+    const userDocRef = admin.firestore().collection("users").doc(uid);
 
     userDocRef.set({
         email,
         displayName,
         uid,
-        registratedAt: FieldValue.serverTimestamp()
+        registratedAt: FieldValue.serverTimestamp(),
     });
 
-    logger.info('New user created:', uid, displayName, email, { structuredData: true });
+    logger.info("New user created:", uid, displayName, email, { structuredData: true });
 });
