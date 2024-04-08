@@ -6,6 +6,7 @@ export const generatePodcastAd = onRequest(async (request, response) => {
 
     const mergeAudioUrl = "https://merge-media-dx3v2rbg6q-od.a.run.app/mergeaudio";
 
+
     const { track1, track2 } = request.body;
 
     if (!track1 || !track2) {
