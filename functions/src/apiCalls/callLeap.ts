@@ -1,6 +1,8 @@
 import * as logger from "firebase-functions/logger";
 import { Leap } from "@leap-ai/workflows";
 
+require('dotenv').config()
+
 /**
  * Retrieves the LEAP API key from environment variables.
  * @throws {Error} Throws an error if the LEAP API key is not set in the environment variables.
@@ -47,6 +49,28 @@ export type LeapResponse = {
  * @throws {Error} Throws an error if the call to the Leap API fails.
  */
 export async function triggerLeapWorkflow(input: LeapInput): Promise<LeapResponse> {
+
+    // console.log("Received input: ", input);
+
+    // return new Promise((resolve, reject) => {
+    //     setTimeout(() => {
+    //         resolve({
+    //             id: 'test-id',
+    //             version_id: 'test-version-id',
+    //             status: 'completed',
+    //             created_at: 'test-created-at',
+    //             started_at: 'test-start',
+    //             ended_at: 'test-ended-at',
+    //             workflow_id: 'test-workflow-id',
+    //             error: null,
+    //             input: input,
+    //             output: {
+    //                 generated_music: 'https://firebasestorage.googleapis.com/v0/b/ai-marketing-e2b7e.appspot.com/o/TEST%2Ftrack1_lowVolume.mp3?alt=media&token=04fe9e08-c3be-498f-83b9-942b4b69ebb5'
+    //             }
+    //         });
+    //     }, 2000);
+    // });
+
     const leap = new Leap({
         apiKey: LEAP_API_KEY,
     });
@@ -56,6 +80,7 @@ export async function triggerLeapWorkflow(input: LeapInput): Promise<LeapRespons
 
         const leapResponse = await leap.workflowRuns.workflow({
             workflow_id: "wkf_FZIrfeC0AGcbTf",
+            webhook_url: "https://ba50-87-96-139-178.ngrok-free.app/ai-marketing-e2b7e/us-central1/leapHook",
             input: input,
         });
 

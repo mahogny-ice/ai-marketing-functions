@@ -1,18 +1,21 @@
 import { UserRecord } from "firebase-admin/auth";
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+// import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 
 import { FieldValue } from "firebase-admin/firestore";
 
-admin.initializeApp();
+// const admin = require('..firebase/firebaseInit.js');
+import { firebaseAdmin } from '../firebase/firebaseInit';
+
+// admin.initializeApp();
 
 export const processNewUser = functions.auth.user().onCreate((user: UserRecord) => {
     const email = user.email;
     const displayName = user.displayName;
     const uid = user.uid;
 
-    const userDocRef = admin.firestore().collection("users").doc(uid);
+    const userDocRef = firebaseAdmin.firestore().collection("users").doc(uid);
 
     userDocRef.set({
         email,

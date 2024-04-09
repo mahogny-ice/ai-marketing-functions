@@ -16,8 +16,9 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@gradio/client": "^0.15.0",
+    "@gradio/client": "^0.14.0",
     "@leap-ai/workflows": "^1.1.2",
+    "dotenv": "^16.4.5",
     "firebase-admin": "^11.11.1",
     "firebase-functions": "^4.3.1"
   },

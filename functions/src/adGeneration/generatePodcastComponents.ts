@@ -1,29 +1,30 @@
 import * as logger from "firebase-functions/logger";
-import { GradioAPIResponse, GradioParams, triggerGradioWorkflow } from "../apiCalls/callGradio";
-import { LeapResponse, triggerLeapWorkflow } from "../apiCalls/callLeap";
-
-type GradioInput = {
-    url: string;
-    params: GradioParams;
-}
+import { triggerLeapWorkflow } from "../apiCalls/callLeap";
+import { triggerMockApi } from "../apiCalls/mockApi";
 
 type LeapInput = {
     music_prompt: string;
     duration_in_seconds: number;
 }
 
-export async function generatePodcastComponents(leapInput: LeapInput, gradioInput: GradioInput) {
+export async function generatePodcastComponents(leapInput: LeapInput) {
 
-    let leapData: LeapResponse;
-    let gradioData: GradioAPIResponse;
-
-    let leapUrl: string = '';
-    let gradioUrl: string = '';
+    let musicUrl: string | undefined = '';
+    let voUrl: string | undefined = '';
 
     // Call the Leap API to generate podcast ad music
     try {
-        leapData = await triggerLeapWorkflow(leapInput).then((result) => {
-            logger.info("Successfully generated podcast ad music", { structuredData: true });
+        await triggerLeapWorkflow(leapInput).then((result) => {
+
+            if (result.status !== "completed") {
+                logger.error("Error generating podcast ad music", { structuredData: true });
+                throw new Error("Failed to generate podcast ad music");
+            } else {
+                musicUrl = result.output?.generated_music;
+                logger.info("Successfully generated podcast ad music at: ", { structuredData: true });
+                logger.info(result, { structuredData: true });
+            }
+            // logger.info("Successfully generated podcast ad music at: " + musicUrl, { structuredData: true });
             return result;
         }).catch((error) => {
             logger.error("Error generating podcast ad music", { structuredData: true });
@@ -34,28 +35,20 @@ export async function generatePodcastComponents(leapInput: LeapInput, gradioInpu
         return;
     }
 
-    // Call the Gradio API to generate podcast ad voiceover
+    // Call mockApi to generate podcast ad voiceover
     try {
-        gradioData = await triggerGradioWorkflow(gradioInput.url, gradioInput.params).then((result) => {
-            logger.info("Gradio prediction result: ", result);
+        await triggerMockApi(2000).then((result) => {
+            logger.info("Successfully generated podcast ad voiceover", { structuredData: true });
+            voUrl = result.output;
             return result;
         }).catch((error) => {
-            logger.error("Error calling Gradio API: ", error);
-            throw new Error("Failed to call Gradio API");
+            logger.error("Error generating podcast ad voiceover", { structuredData: true });
+            throw new Error("Failed to generate podcast ad voiceover");
         });
     } catch (error) {
-        logger.error("Error calling Gradio API: ", error);
+        logger.error("Error generating podcast ad voiceover", { structuredData: true });
         return;
     }
 
-    // Extract the URLs from the API responses
-    if (leapData.output) {
-        leapUrl = leapData.output.generated_music;
-    }
-
-    if (gradioData.data[1]) {
-        gradioUrl = gradioInput.url + gradioData.data[1];
-    }
-
-    return { leapUrl, gradioUrl };
+    return { musicUrl, voUrl };
 }
