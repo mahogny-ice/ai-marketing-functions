@@ -7,15 +7,19 @@ type LeapInput = {
     duration_in_seconds: number;
 }
 
+/**
+ * Generates podcast ad components.
+ * @param {LeapInput} leapInput Input for Leap.
+ * @return {Promise} A promise that resolves with the component URLs.
+ * @throws {Error} If generation fails.
+ */
 export async function generatePodcastComponents(leapInput: LeapInput) {
-
-    let musicUrl: string | undefined = '';
-    let voUrl: string | undefined = '';
+    let musicUrl: string | undefined = "";
+    let voUrl: string | undefined = "";
 
     // Call the Leap API to generate podcast ad music
     try {
         await triggerLeapWorkflow(leapInput).then((result) => {
-
             if (result.status !== "completed") {
                 logger.error("Error generating podcast ad music", { structuredData: true });
                 throw new Error("Failed to generate podcast ad music");
@@ -27,11 +31,13 @@ export async function generatePodcastComponents(leapInput: LeapInput) {
             // logger.info("Successfully generated podcast ad music at: " + musicUrl, { structuredData: true });
             return result;
         }).catch((error) => {
-            logger.error("Error generating podcast ad music", { structuredData: true });
+            logger.error("Error generating podcast ad music: ", { structuredData: true });
+            logger.error(error, { structuredData: true });
             throw new Error("Failed to generate podcast ad music");
         });
     } catch (error) {
-        logger.error("Error generating podcast ad music", { structuredData: true });
+        logger.error("Error generating podcast ad music: ", { structuredData: true });
+        logger.error(error, { structuredData: true });
         return;
     }
 
@@ -42,7 +48,8 @@ export async function generatePodcastComponents(leapInput: LeapInput) {
             voUrl = result.output;
             return result;
         }).catch((error) => {
-            logger.error("Error generating podcast ad voiceover", { structuredData: true });
+            logger.error("Error generating podcast ad voiceover: ", { structuredData: true });
+            logger.error(error, { structuredData: true });
             throw new Error("Failed to generate podcast ad voiceover");
         });
     } catch (error) {

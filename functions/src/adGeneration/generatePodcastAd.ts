@@ -33,7 +33,7 @@ export const generatePodcastAd = onRequest(async (request, response) => {
             }
         }
 
-        //Getting url from Gradio API
+        // Getting url from Gradio API
         const track1 = result.musicUrl;
         const track2 = result.voUrl;
 
@@ -58,7 +58,8 @@ export const generatePodcastAd = onRequest(async (request, response) => {
 
         response.json({ track1, track2 });
     }).catch((error) => {
-        logger.error("Error generating podcast components", { structuredData: true });
+        logger.error("Error generating podcast components: ", { structuredData: true });
+        logger.error(error, { structuredData: true });
         response.status(500).send("Error generating podcast components");
     });
 });

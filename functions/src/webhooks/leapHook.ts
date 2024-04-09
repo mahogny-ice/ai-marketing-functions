@@ -1,7 +1,7 @@
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
-import { firebaseAdmin } from '../firebase/firebaseInit';
+import { firebaseAdmin } from "../firebase/firebaseInit";
 
 // const collectionRef = admin.firestore().collection("webhooks").doc("leap").collection("responses");
 
@@ -35,7 +35,6 @@ export const leapHook = onRequest(async (request, response) => {
         logger.info(leapInput, { structuredData: true });
 
         collectionRef.doc(leapInput.id).set(leapInput);
-
     } catch (error) {
         logger.error("Error processing Leap Webhook", { structuredData: true });
         logger.error(error, { structuredData: true });
