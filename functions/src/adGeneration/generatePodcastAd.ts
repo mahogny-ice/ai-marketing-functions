@@ -4,9 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { firebaseAdmin } from "../firebase/firebaseInit";
 
-// const mergeAudioUrl = "https://merge-media-dx3v2rbg6q-od.a.run.app/mergeaudio";
-
-type GenerationJob = {
+export type GenerationJob = {
     id: string;
     type: "podcastAd";
     status: "running" | "completed" | "failed" | "canceled";
@@ -18,7 +16,7 @@ type GenerationJob = {
     output: string;
 }
 
-type PodcastAdComponents = {
+export type PodcastAdComponents = {
     musicUrl: string;
     voUrl: string;
 }

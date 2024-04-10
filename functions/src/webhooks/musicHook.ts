@@ -32,12 +32,14 @@ export const receiveGeneratedMusic = onRequest(async (request, response) => {
             }).catch((error) => {
                 logger.log("Couldn't update music url. Error:", error);
                 response.status(500).send("Couldn't update music url");
+                // TODO: Set job.status to 'failed'
                 return;
             });
         }
     } catch (error) {
         logger.error("Couldn't get music. Error:", error);
         response.status(500).send("Couldn't get music");
+        // TODO: Set job.status to 'failed'
         return;
     }
 });

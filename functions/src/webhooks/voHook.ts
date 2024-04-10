@@ -32,6 +32,7 @@ export const receiveGeneratedVO = onRequest(async (request, response) => {
             }).catch((error) => {
                 logger.log("Couldn't update VO url. Error:", error);
                 response.status(500).send("Couldn't update VO url");
+                // TODO: Set job.status to 'failed'
                 return;
             });
         }
