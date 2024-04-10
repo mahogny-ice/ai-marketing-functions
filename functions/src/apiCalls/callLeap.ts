@@ -1,6 +1,8 @@
 import * as logger from "firebase-functions/logger";
 import { Leap } from "@leap-ai/workflows";
 
+import "dotenv/config";
+
 /**
  * Retrieves the LEAP API key from environment variables.
  * @throws {Error} Throws an error if the LEAP API key is not set in the environment variables.
@@ -56,6 +58,7 @@ export async function triggerLeapWorkflow(input: LeapInput): Promise<LeapRespons
 
         const leapResponse = await leap.workflowRuns.workflow({
             workflow_id: "wkf_FZIrfeC0AGcbTf",
+            webhook_url: "https://leapHook-dx3v2rbg6q-uc.a.run.app",
             input: input,
         });
 
