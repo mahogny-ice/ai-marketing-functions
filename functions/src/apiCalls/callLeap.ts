@@ -16,6 +16,7 @@ const LEAP_API_KEY: string = process.env.LEAP_API_KEY ?? (() => {
  */
 export type LeapInput = {
     music_prompt: string; // The music description or prompt.
+    webhook: string; // The webhook to send the music too.
     duration_in_seconds: number; // The duration for the music generation, in seconds.
 };
 

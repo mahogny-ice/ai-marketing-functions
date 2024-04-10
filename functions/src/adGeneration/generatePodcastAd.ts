@@ -73,7 +73,7 @@ export const generatePodcastAd = onRequest(async (request, response) => {
     }
 
     try {
-        const jobRef = firebaseAdmin.firestore().collection("GenerationJobs").doc("running").collection("jobs").doc(job.id);
+        const jobRef = firebaseAdmin.firestore().collection("generationJobs").doc("running").collection("jobs").doc(job.id);
 
         jobRef.set(job);
         response.status(200).send("Started new podcast ad generation job: " + job);
