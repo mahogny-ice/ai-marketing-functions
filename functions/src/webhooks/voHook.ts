@@ -14,10 +14,11 @@ export const receiveGeneratedVO = onRequest(async (request, response) => {
         return;
     }
 
-    try {
-        const jobRef = firebaseAdmin.firestore().collection("generationJobs").doc("running").collection("jobs").doc(jobId);
+    const jobRef = firebaseAdmin.firestore().collection("generationJobs").doc("running").collection("jobs").doc(jobId);
 
+    try {
         const jobSnapshot = await jobRef.get();
+
         if (!jobSnapshot.exists) {
             logger.error("Can't find any matching job");
             response.status(400).send("Can't find any matching job");
@@ -32,13 +33,14 @@ export const receiveGeneratedVO = onRequest(async (request, response) => {
             }).catch((error) => {
                 logger.log("Couldn't update VO url. Error:", error);
                 response.status(500).send("Couldn't update VO url");
-                // TODO: Set job.status to 'failed'
+                jobRef.update({ "status": "failed" });
                 return;
             });
         }
     } catch (error) {
         logger.error("Couldn't get VO. Error:", error);
         response.status(500).send("Couldn't get VO");
+        jobRef.update({ "status": "failed" });
         return;
     }
 });
