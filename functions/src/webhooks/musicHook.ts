@@ -4,7 +4,7 @@ import * as logger from "firebase-functions/logger";
 import { firebaseAdmin } from "../firebase/firebaseInit";
 
 export const receiveGeneratedMusic = onRequest(async (request, response) => {
-    const jobId = request.body.output.jobId as string;
+    const jobId = request.body.output.job_id as string;
     const url = request.body.output.url as string;
 
     // Validating input

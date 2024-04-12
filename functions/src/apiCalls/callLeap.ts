@@ -15,8 +15,10 @@ const LEAP_API_KEY: string = process.env.LEAP_API_KEY ?? (() => {
  * Defines the input parameters for the Leap workflow.
  */
 export type LeapInput = {
-    music_prompt: string; // The music description or prompt.
+    job_id: string;
+    workflow_id: string;
     webhook: string; // The webhook to send the music too.
+    prompt: string; // The music description or prompt.
     duration_in_seconds: number; // The duration for the music generation, in seconds.
 };
 
@@ -24,7 +26,8 @@ export type LeapInput = {
  * Represents the expected structure of the Leap workflow output.
  */
 export type LeapOutput = {
-    generated_music: string; // The URL to the generated music file.
+    job_id: string;
+    url: string; // The URL to the generated music file.
 };
 
 /**
@@ -58,9 +61,9 @@ export async function triggerLeapWorkflow(input: LeapInput): Promise<LeapRespons
         logger.info("Received input: ", input, { structuredData: true });
 
         const leapResponse = await leap.workflowRuns.workflow({
-            workflow_id: "wkf_FZIrfeC0AGcbTf",
-            webhook_url: "https://leapHook-dx3v2rbg6q-uc.a.run.app",
-            input: input,
+            workflow_id: input.workflow_id,
+            webhook_url: input.webhook,
+            input
         });
 
         return leapResponse.data as LeapResponse;

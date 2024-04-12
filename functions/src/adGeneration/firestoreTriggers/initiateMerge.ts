@@ -4,7 +4,8 @@ import * as logger from "firebase-functions/logger";
 const mergeAudioAPI = "https://merge-media-dx3v2rbg6q-od.a.run.app/mergeaudio";
 
 interface MergeAudioResponse {
-    downloadUrl: string;
+    // downloadUrl: string;
+    url: string;
 }
 
 export const initiateMerge = functions.firestore
@@ -21,17 +22,26 @@ export const initiateMerge = functions.firestore
         if (updatedJobData.status === "running") {
             try {
                 const { musicUrl, voUrl } = updatedJobData.components;
+                const input = updatedJobData.input;
 
                 // TODO: Verify user and add file to user path in storage or some other smart idea
-                const storageFilename = `newMerges/${updatedJobData.id}.mp3`;
+                // const storageFilename = `newMerges/${updatedJobData.id}.mp3`;
 
                 if (musicUrl && voUrl) {
                     logger.info("Initializing merge...");
 
                     const body = {
-                        track1: musicUrl,
-                        track2: voUrl,
-                        storageFilename,
+                        jobId: updatedJobData.id,
+                        track1: {
+                            url: musicUrl,
+                            volume: input.music.volume,
+                            offset: input.music.offsetInMilliseconds,
+                        },
+                        track2: {
+                            url: voUrl,
+                            volume: input.vo.volume,
+                            offset: input.vo.offsetInMilliseconds,
+                        },
                     }
 
                     await fetch(mergeAudioAPI, {
@@ -44,10 +54,16 @@ export const initiateMerge = functions.firestore
                         logger.info("Successfully merged audio tracks");
 
                         const mergedAudioData: MergeAudioResponse = await result.json();
-                        const outputUrl = mergedAudioData.downloadUrl;
+                        // const mergedAudioData: MergeAudioResponse = result.url;
+                        logger.info("mergedAudioData: ", mergedAudioData);
+                        // const outputUrl = mergedAudioData.downloadUrl;
+                        const outputUrl = mergedAudioData.url;
+                        // const outputUrl = result.url;
 
                         jobRef.update({ "output": outputUrl });
                         jobRef.update({ "status": "completed" });
+
+                        // TODO: Add track id to users generated tracks
 
                         return;
                     }).catch((error) => {
