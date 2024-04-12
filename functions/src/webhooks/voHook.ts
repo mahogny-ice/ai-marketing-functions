@@ -8,9 +8,9 @@ export const receiveGeneratedVO = onRequest(async (request, response) => {
     const url = request.body.output.url as string;
 
     // Validating input
-    if (typeof jobId !== 'string' || typeof url !== 'string') {
-        logger.error('Invalid input types');
-        response.status(400).send('Invalid input types');
+    if (typeof jobId !== "string" || typeof url !== "string") {
+        logger.error("Invalid input types");
+        response.status(400).send("Invalid input types");
         return;
     }
 
@@ -25,7 +25,7 @@ export const receiveGeneratedVO = onRequest(async (request, response) => {
             return;
         } else {
             await jobRef.update({
-                "components.voUrl": url
+                "components.voUrl": url,
             }).then(() => {
                 logger.log("VO url updated successfully");
                 response.status(200).send("VO url updated successfully");

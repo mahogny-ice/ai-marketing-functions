@@ -16,9 +16,9 @@ export const processNewJob = functions.firestore
                 const input = {
                     prompt: prompt,
                     duration_in_seconds: durationInSeconds,
-                    webhook: 'https://receiveGeneratedMusic-dx3v2rbg6q-uc.a.run.app',
+                    webhook: "https://receiveGeneratedMusic-dx3v2rbg6q-uc.a.run.app",
                     job_id: jobId,
-                    workflow_id: 'wkf_kDiB0Z6F5eiH5y'
+                    workflow_id: "wkf_kDiB0Z6F5eiH5y",
                 };
 
                 // Simulating music API call
@@ -42,16 +42,16 @@ export const processNewJob = functions.firestore
                 // }, 4000)
 
                 await triggerLeapWorkflow(input)
-                    .then((result) => {
+                    .then(() => {
                         logger.info("Successfully started leap music workflow");
                         return;
                     })
                     .catch((error) => {
                         logger.error("Error while starting leap music workflow", error);
                         return;
-                    })
+                    });
             } catch (error) {
-                logger.error("Failed to start music generation with error: ")
+                logger.error("Failed to start music generation with error: ");
                 logger.error(error);
                 return;
             }
@@ -63,9 +63,9 @@ export const processNewJob = functions.firestore
                 const input = {
                     prompt: prompt,
                     duration_in_seconds: durationInSeconds,
-                    webhook: 'https://receiveGeneratedVO-dx3v2rbg6q-uc.a.run.app',
+                    webhook: "https://receiveGeneratedVO-dx3v2rbg6q-uc.a.run.app",
                     job_id: jobId,
-                    workflow_id: 'wkf_k5ko9EEpCxZSYi'
+                    workflow_id: "wkf_k5ko9EEpCxZSYi",
                 };
 
                 // Simulating VO API call
@@ -89,16 +89,16 @@ export const processNewJob = functions.firestore
                 // }, 3000)
 
                 await triggerLeapWorkflow(input)
-                    .then((result) => {
+                    .then(() => {
                         logger.info("Successfully started leap VO workflow");
                         return;
                     })
                     .catch((error) => {
                         logger.error("Error while starting leap VO workflow", error);
                         return;
-                    })
+                    });
             } catch (error) {
-                logger.error("Failed to start VO generation with error: ")
+                logger.error("Failed to start VO generation with error: ");
                 logger.error(error);
                 return;
             }

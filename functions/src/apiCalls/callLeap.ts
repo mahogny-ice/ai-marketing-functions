@@ -63,7 +63,7 @@ export async function triggerLeapWorkflow(input: LeapInput): Promise<LeapRespons
         const leapResponse = await leap.workflowRuns.workflow({
             workflow_id: input.workflow_id,
             webhook_url: input.webhook,
-            input
+            input,
         });
 
         return leapResponse.data as LeapResponse;

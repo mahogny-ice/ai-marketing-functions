@@ -15,5 +15,5 @@ export {
     processNewJob,
     receiveGeneratedMusic,
     receiveGeneratedVO,
-    initiateMerge
+    initiateMerge,
 };

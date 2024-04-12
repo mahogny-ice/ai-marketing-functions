@@ -10,7 +10,7 @@ interface MergeAudioResponse {
 
 export const initiateMerge = functions.firestore
     .document("generationJobs/running/jobs/{jobId}")
-    .onUpdate(async (change, context) => {
+    .onUpdate(async (change) => {
         logger.info("Job updated, checking components...");
 
         // TODO: Add proper validation
@@ -42,7 +42,7 @@ export const initiateMerge = functions.firestore
                             volume: input.vo.volume,
                             offset: input.vo.offsetInMilliseconds,
                         },
-                    }
+                    };
 
                     await fetch(mergeAudioAPI, {
                         method: "POST",
