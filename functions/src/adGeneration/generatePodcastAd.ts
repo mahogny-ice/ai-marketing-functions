@@ -1,65 +1,84 @@
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import { generatePodcastComponents } from "./generatePodcastComponents";
+import { v4 as uuidv4 } from 'uuid';
+
+import { firebaseAdmin } from "../firebase/firebaseInit";
+
+export type GenerationJob = {
+    id: string;
+    type: "podcastAd";
+    status: "running" | "completed" | "failed" | "canceled";
+    components: PodcastAdComponents;
+    input: {
+        music: MusicInput;
+        vo: VoInput;
+    }
+    output: string;
+}
+
+export type PodcastAdComponents = {
+    musicUrl: string;
+    voUrl: string;
+}
+
+type MusicInput = {
+    prompt: string;
+    durationInSeconds: number;
+    volume: number;
+    offsetInMilliseconds: number;
+}
+
+type VoInput = {
+    prompt: string;
+    durationInSeconds: number;
+    volume: number;
+    offsetInMilliseconds: number;
+}
 
 export const generatePodcastAd = onRequest(async (request, response) => {
-    logger.info("Merge audio logs!", { structuredData: true });
+    let job: GenerationJob;
 
-    // const mergeAudioUrl = "https://merge-media-dx3v2rbg6q-od.a.run.app/mergeaudio";
-
-    type LeapInput = {
-        music_prompt: string;
-        duration_in_seconds: number;
+    try {
+        job = {
+            id: uuidv4(),
+            status: "running",
+            type: "podcastAd",
+            components: {
+                musicUrl: "",
+                voUrl: "",
+            },
+            input: {
+                music: {
+                    prompt: request.body.music.prompt,
+                    durationInSeconds: request.body.music.durationInSeconds,
+                    volume: request.body.music.volume,
+                    offsetInMilliseconds: request.body.music.offsetInMilliseconds,
+                },
+                vo: {
+                    prompt: request.body.vo.prompt,
+                    durationInSeconds: request.body.vo.durationInSeconds,
+                    volume: request.body.vo.volume,
+                    offsetInMilliseconds: request.body.vo.offsetInMilliseconds,
+                },
+            },
+            output: "",
+        };
+    } catch (error) {
+        logger.error("Error generating podcast ad", { structuredData: true });
+        logger.error(error, { structuredData: true });
+        response.status(500).send("Error: " + error);
+        return;
     }
 
-    const leapInput: LeapInput = request.body.leapInput;
+    try {
+        const jobRef = firebaseAdmin.firestore().collection("generationJobs").doc("running").collection("jobs").doc(job.id);
 
-    await generatePodcastComponents(leapInput).then(async (result) => {
-        if (!result) {
-            logger.error("Error generating podcast components", { structuredData: true });
-            response.status(500).send("Error generating podcast components");
-            return;
-        } else {
-            if (!result.musicUrl) {
-                logger.error("Error generating podcast ad music", { structuredData: true });
-                response.status(500).send("Error generating podcast ad music");
-                return;
-            } else if (!result.voUrl) {
-                logger.error("Error generating podcast ad voiceover", { structuredData: true });
-                response.status(500).send("Error generating podcast ad voiceover");
-                return;
-            } else {
-                logger.info("Successfully generated podcast components", { structuredData: true });
-            }
-        }
-
-        // Getting url from Gradio API
-        const track1 = result.musicUrl;
-        const track2 = result.voUrl;
-
-        console.log("track1: ", track1);
-        console.log("track2: ", track2);
-
-        // const mergeAudioResponse = await fetch(mergeAudioUrl, {
-        //     method: "POST",
-        //     body: JSON.stringify({ track1, track2 }),
-        //     headers: { "Content-Type": "application/json" },
-        // });
-
-        // if (!mergeAudioResponse.ok) {
-        //     logger.error("Error merging audio", { structuredData: true });
-        //     response.status(500).send("Error merging audio");
-        //     return;
-        // } else {
-        //     logger.info("Successfully merged audio", { structuredData: true });
-        //     const res = await mergeAudioResponse.json();
-        //     response.json(res);
-        // }
-
-        response.json({ track1, track2 });
-    }).catch((error) => {
-        logger.error("Error generating podcast components: ", { structuredData: true });
+        jobRef.set(job);
+        response.status(200).send("Started new podcast ad generation job: " + job);
+    } catch (error) {
+        logger.error("Error starting new podcast ad generation job", { structuredData: true });
         logger.error(error, { structuredData: true });
-        response.status(500).send("Error generating podcast components");
-    });
+        response.status(500).send("Error: " + error);
+        return;
+    }
 });
