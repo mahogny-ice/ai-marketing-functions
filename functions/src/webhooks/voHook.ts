@@ -2,6 +2,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
 import { firebaseAdmin } from "../firebase/firebaseInit";
+import { DocumentReference } from "firebase-admin/firestore";
 
 export const receiveGeneratedVO = onRequest(async (request, response) => {
     const jobId = request.body.output.job_id as string;
@@ -14,17 +15,39 @@ export const receiveGeneratedVO = onRequest(async (request, response) => {
         return;
     }
 
-    const jobRef = firebaseAdmin.firestore().collection("generationJobs").doc("running").collection("jobs").doc(jobId);
+    let jobRef: DocumentReference | null = null;
 
     try {
-        const jobSnapshot = await jobRef.get();
+        const users = await firebaseAdmin.firestore().collection("users").listDocuments();
 
-        if (!jobSnapshot.exists) {
+        for (const user of users) {
+            const job = await user.collection("generationJobs").doc(jobId).get();
+            if (jobId === job.id) {
+                jobRef = user.collection("generationJobs").doc(jobId);
+                logger.log("Job found");
+            } else {
+                logger.error("Can't find any matching job");
+                jobRef = null;
+            }
+        }
+    } catch (error) {
+        jobRef = null;
+    }
+
+    if (!jobRef) {
+        logger.error("Can't find any matching job. Terminating voHook");
+        return;
+    }
+
+    try {
+        const jobSnapshot = await jobRef?.get();
+
+        if (!jobSnapshot?.exists) {
             logger.error("Can't find any matching job");
             response.status(400).send("Can't find any matching job");
             return;
         } else {
-            await jobRef.update({
+            await jobRef?.update({
                 "components.voUrl": url,
             }).then(() => {
                 logger.log("VO url updated successfully");
@@ -33,14 +56,14 @@ export const receiveGeneratedVO = onRequest(async (request, response) => {
             }).catch((error) => {
                 logger.log("Couldn't update VO url. Error:", error);
                 response.status(500).send("Couldn't update VO url");
-                jobRef.update({ "status": "failed" });
+                jobRef?.update({ "status": "failed" });
                 return;
             });
         }
     } catch (error) {
         logger.error("Couldn't get VO. Error:", error);
         response.status(500).send("Couldn't get VO");
-        jobRef.update({ "status": "failed" });
+        jobRef?.update({ "status": "failed" });
         return;
     }
 });

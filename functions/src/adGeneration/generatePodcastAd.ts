@@ -1,10 +1,12 @@
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { v4 as uuidv4 } from "uuid";
-
 import { firebaseAdmin } from "../firebase/firebaseInit";
+import { FieldValue } from "firebase-admin/firestore";
 
 export type GenerationJob = {
+    createdAt: FieldValue;
+    userId: string;
     id: string;
     type: "podcastAd";
     status: "running" | "completed" | "failed" | "canceled";
@@ -40,6 +42,8 @@ export const generatePodcastAd = onRequest(async (request, response) => {
 
     try {
         job = {
+            createdAt: FieldValue.serverTimestamp(),
+            userId: request.body.userId,
             id: uuidv4(),
             status: "running",
             type: "podcastAd",
@@ -71,10 +75,11 @@ export const generatePodcastAd = onRequest(async (request, response) => {
     }
 
     try {
-        const jobRef = firebaseAdmin.firestore().collection("generationJobs").doc("running").collection("jobs").doc(job.id);
+        const jobRef = firebaseAdmin.firestore().collection("users").doc(job.userId).collection("generationJobs").doc(job.id);
 
         jobRef.set(job);
-        logger.error("Started new podcast ad generation job: " + job.id);
+
+        logger.info("Started new podcast ad generation job: " + job.id);
         response.status(200).json({ message: "Started new podcast ad generation job", jobId: job.id });
     } catch (error) {
         logger.error("Error starting new podcast ad generation job", { structuredData: true });

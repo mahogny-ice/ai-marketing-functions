@@ -3,7 +3,7 @@ import * as logger from "firebase-functions/logger";
 import { triggerLeapWorkflow } from "../../apiCalls/callLeap";
 
 export const processNewJob = functions.firestore
-    .document("generationJobs/running/jobs/{jobId}")
+    .document("users/{userId}/generationJobs/{jobId}")
     .onCreate(async (snapshot, context) => {
         const newJobData = snapshot.data();
         const jobId = context.params.jobId;
@@ -39,6 +39,8 @@ export const processNewJob = functions.firestore
                 //         },
                 //         body: JSON.stringify(body),
                 //     });
+
+                //     logger.info("Music mock-API call done");
                 // }, 4000)
 
                 await triggerLeapWorkflow(input)
@@ -86,6 +88,8 @@ export const processNewJob = functions.firestore
                 //         },
                 //         body: JSON.stringify(body),
                 //     });
+
+                //     logger.info("VO mock-API call done");
                 // }, 3000)
 
                 await triggerLeapWorkflow(input)
