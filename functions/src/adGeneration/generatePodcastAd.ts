@@ -74,7 +74,8 @@ export const generatePodcastAd = onRequest(async (request, response) => {
         const jobRef = firebaseAdmin.firestore().collection("generationJobs").doc("running").collection("jobs").doc(job.id);
 
         jobRef.set(job);
-        response.status(200).send("Started new podcast ad generation job: " + job);
+        logger.error("Started new podcast ad generation job: " + job.id);
+        response.status(200).json({ message: "Started new podcast ad generation job", jobId: job.id });
     } catch (error) {
         logger.error("Error starting new podcast ad generation job", { structuredData: true });
         logger.error(error, { structuredData: true });
