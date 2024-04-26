@@ -53,23 +53,22 @@ export const generatePodcastAd = onRequest(async (request, response) => {
             },
             input: {
                 music: {
-                    prompt: request.body.music.prompt,
-                    durationInSeconds: request.body.music.durationInSeconds,
-                    volume: request.body.music.volume,
-                    offsetInMilliseconds: request.body.music.offsetInMilliseconds,
+                    prompt: "",
+                    durationInSeconds: 1,
+                    volume: 1,
+                    offsetInMilliseconds: 0,
                 },
                 vo: {
-                    prompt: request.body.vo.prompt,
-                    durationInSeconds: request.body.vo.durationInSeconds,
-                    volume: request.body.vo.volume,
-                    offsetInMilliseconds: request.body.vo.offsetInMilliseconds,
+                    prompt: "",
+                    durationInSeconds: 1,
+                    volume: 1,
+                    offsetInMilliseconds: 0,
                 },
             },
             output: "",
         };
     } catch (error) {
-        logger.error("Error generating podcast ad", { structuredData: true });
-        logger.error(error, { structuredData: true });
+        logger.error("Error generating podcast ad", error, { structuredData: true });
         response.status(500).send("Error: " + error);
         return;
     }
@@ -82,8 +81,7 @@ export const generatePodcastAd = onRequest(async (request, response) => {
         logger.info("Started new podcast ad generation job: " + job.id);
         response.status(200).json({ message: "Started new podcast ad generation job", jobId: job.id });
     } catch (error) {
-        logger.error("Error starting new podcast ad generation job", { structuredData: true });
-        logger.error(error, { structuredData: true });
+        logger.error("Error starting new podcast ad generation job", error, { structuredData: true });
         response.status(500).send("Error: " + error);
         return;
     }
