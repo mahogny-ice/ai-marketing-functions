@@ -49,19 +49,19 @@ export type SoundrawResponse = {
  * @throws {Error} Throws an error if the call to the Soundraw API fails.
  */
 export async function composeMusic(input: SoundrawInput): Promise<string> {
-    const api_url = 'https://soundraw.io/api/v2/musics/compose';
+    const apiUrl = "https://soundraw.io/api/v2/musics/compose";
     const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SOUNDRAW_API_KEY}`
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${SOUNDRAW_API_KEY}`,
     };
     const body = JSON.stringify(input);
 
     try {
-        const response = await fetch(api_url, {
-            method: 'POST',
+        const response = await fetch(apiUrl, {
+            method: "POST",
             headers: headers,
-            body: body
-        }).then(res => res.json());
+            body: body,
+        }).then((res) => res.json());
 
         if (!response.ok) {
             throw new Error(`API response not ok: ${response.status} ${response.statusText}`);
@@ -85,12 +85,12 @@ export async function composeMusic(input: SoundrawInput): Promise<string> {
             },
         });
 
-        const [music_url] = await file.getSignedUrl({
+        const [musicUrl] = await file.getSignedUrl({
             action: "read",
             expires: Date.now() + 2 * 60 * 60 * 1000,
         });
 
-        return music_url;
+        return musicUrl;
     } catch (error) {
         logger.error("Failed to generate music: ", error);
         throw new Error("Soundraw music generation failed " + (error as Error).message);
