@@ -3,7 +3,6 @@ import { openaiTTS } from "./callOpenAi";
 import type { OpenaiInput } from "./callOpenAi";
 import * as logger from "firebase-functions/logger";
 
-
 export const generateSpeech = onRequest(async (request, response) => {
     const prompt = request.body as OpenaiInput;
     try {

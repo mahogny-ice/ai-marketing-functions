@@ -10,7 +10,7 @@ dotenv.config();
  * @throws {Error} Throws an error if the API key is not found in the environment variables.
  */
 const OPENAI_API_KEY: string = process.env.OPENAI_API_KEY ?? (() => {
-    throw new Error("Required environment variable OPEN_AI_KEY is not set");
+    throw new Error("Required environment variable OPENAI_API_KEY is not set");
 })();
 
 const openai = new OpenAI({
