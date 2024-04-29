@@ -1,6 +1,5 @@
 import * as logger from "firebase-functions/logger";
 import { Leap } from "@leap-ai/workflows";
-
 import "dotenv/config";
 
 /**

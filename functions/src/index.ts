@@ -6,6 +6,7 @@ import { receiveGeneratedMusic } from "./webhooks/musicHook";
 import { receiveGeneratedVO } from "./webhooks/voHook";
 import { processNewJob } from "./adGeneration/firestoreTriggers/processNewJob";
 import { initiateMerge } from "./adGeneration/firestoreTriggers/initiateMerge";
+import { generateSpeech } from "./apiCalls/generateTts";
 
 export {
     processNewUser,
@@ -16,4 +17,5 @@ export {
     receiveGeneratedMusic,
     receiveGeneratedVO,
     initiateMerge,
+    generateSpeech,
 };
