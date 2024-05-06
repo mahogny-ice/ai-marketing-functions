@@ -11,6 +11,32 @@ export const updateJobComponents = onRequest(async (request, response) => {
         return;
     }
 
+    // Validate musicPrompt
+    if (musicPrompt) {
+        if (!musicPrompt.genres || !musicPrompt.moods || !musicPrompt.themes || !musicPrompt.length) {
+            console.error("Invalid musicPrompt");
+            return;
+        }
+
+        if (typeof (musicPrompt.genres) !== "string" || typeof (musicPrompt.moods) !== "string" || typeof (musicPrompt.themes) !== "string" || typeof (musicPrompt.length) !== "number") {
+            console.error("Invalid musicPrompt");
+            return;
+        }
+    }
+
+    // Validate voPrompt
+    if (voPrompt) {
+        if (!voPrompt.voice || !voPrompt.input) {
+            console.error("Invalid voPrompt");
+            return;
+        }
+
+        if (typeof (voPrompt.voice) !== "string" || typeof (voPrompt.input) !== "string") {
+            console.error("Invalid voPrompt");
+            return;
+        }
+    }
+
     try {
         jobRef = firebaseAdmin.firestore().collection("users").doc(userId).collection("generationJobs").doc(jobId);
         job = (await jobRef.get()).data() as GenerationJob;

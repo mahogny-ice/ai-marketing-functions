@@ -24,17 +24,29 @@ export type PodcastAdComponents = {
 }
 
 type MusicInput = {
-    prompt: string;
+    prompt: MusicPrompt;
     durationInSeconds: number;
     volume: number;
     offsetInMilliseconds: number;
 }
 
+type MusicPrompt = {
+    genres: string;
+    moods: string;
+    themes: string;
+    length: number;
+}
+
 type VoInput = {
-    prompt: string;
+    prompt: VoPrompt;
     durationInSeconds: number;
     volume: number;
     offsetInMilliseconds: number;
+}
+
+type VoPrompt = {
+    voice: string;
+    input: string;
 }
 
 export const generatePodcastAd = onRequest(async (request, response) => {
@@ -53,13 +65,21 @@ export const generatePodcastAd = onRequest(async (request, response) => {
             },
             input: {
                 music: {
-                    prompt: "",
+                    prompt: {
+                        genres: "",
+                        moods: "",
+                        themes: "",
+                        length: 0,
+                    },
                     durationInSeconds: 1,
                     volume: 1,
                     offsetInMilliseconds: 0,
                 },
                 vo: {
-                    prompt: "",
+                    prompt: {
+                        voice: "",
+                        input: "",
+                    },
                     durationInSeconds: 1,
                     volume: 1,
                     offsetInMilliseconds: 0,
