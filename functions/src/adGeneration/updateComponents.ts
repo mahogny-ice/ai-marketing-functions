@@ -3,7 +3,7 @@ import { firebaseAdmin } from "../firebase/firebaseInit";
 import type { GenerationJob } from "./generatePodcastAd";
 
 export const updateJobComponents = onRequest(async (request, response) => {
-    const { jobId, musicUrl, voUrl, userId } = request.body;
+    const { jobId, musicUrl, voUrl, userId, musicPrompt, voPrompt } = request.body;
     let jobRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>;
     let job: GenerationJob;
     if (!jobId || !userId) {
@@ -24,9 +24,12 @@ export const updateJobComponents = onRequest(async (request, response) => {
     }
 
     const components = job.components;
+    const input = job.input;
 
     if (musicUrl) components.musicUrl = musicUrl;
     if (voUrl) components.voUrl = voUrl;
+    if (musicPrompt) input.music.prompt = musicPrompt;
+    if (voPrompt) input.vo.prompt = voPrompt;
 
     await jobRef.update({ components });
     response.status(200).send("Success");

@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as logger from "firebase-functions/logger";
+import { firebaseAdmin } from "../../firebase/firebaseInit";
 
 const mergeAudioAPI = "https://merge-media-dx3v2rbg6q-od.a.run.app/mergeaudio";
 
@@ -21,24 +22,28 @@ export const initiateMerge = functions.firestore
         if (updatedJobData.status === "running") {
             try {
                 const { musicUrl, voUrl } = updatedJobData.components;
-                const input = updatedJobData.input;
-
-                // TODO: Verify user and add file to user path in storage or some other smart idea
 
                 if (musicUrl && voUrl) {
                     logger.info("Initializing merge...");
+
+                    const config = (await firebaseAdmin.firestore().collection("mergeConfig").doc("config").get()).data();
+
+                    if (!config) {
+                        logger.error("Merge config not found. Make sure it exists under mergeConfig/config. Aborting job merge.");
+                        return;
+                    }
 
                     const body = {
                         jobId: updatedJobData.id,
                         track1: {
                             url: musicUrl,
-                            volume: input.music.volume,
-                            offset: input.music.offsetInMilliseconds,
+                            volume: config.track1.volume,
+                            offset: config.track1.offset,
                         },
                         track2: {
                             url: voUrl,
-                            volume: input.vo.volume,
-                            offset: input.vo.offsetInMilliseconds,
+                            volume: config.track2.volume,
+                            offset: config.track2.offset,
                         },
                     };
 
