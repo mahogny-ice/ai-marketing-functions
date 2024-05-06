@@ -52,7 +52,7 @@ export const updateJobComponents = onRequest(async (request, response) => {
         if (musicPrompt) input.music.prompt = musicPrompt;
         if (voPrompt) input.vo.prompt = voPrompt;
 
-        await jobRef.update({ components });
+        await jobRef.update({ components, input });
         response.status(200).send("Success");
     } catch (error) {
         logger.error("Error updating job components and input! ", error);
