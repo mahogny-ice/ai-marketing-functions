@@ -1,6 +1,7 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { firebaseAdmin } from "../firebase/firebaseInit";
 import type { GenerationJob } from "./generatePodcastAd";
+import { logger } from "firebase-functions/v1";
 
 export const updateJobComponents = onRequest(async (request, response) => {
     const { jobId, musicUrl, voUrl, userId, musicPrompt, voPrompt } = request.body;
@@ -13,28 +14,21 @@ export const updateJobComponents = onRequest(async (request, response) => {
 
     // Validate musicPrompt
     if (musicPrompt) {
-        if (!musicPrompt.genres || !musicPrompt.moods || !musicPrompt.themes || !musicPrompt.length) {
-            console.error("Invalid musicPrompt");
-            return;
-        }
+        if (!musicPrompt.genres) console.warn("Missing genres");
+        if (!musicPrompt.moods) console.warn("Missing moods");
+        if (!musicPrompt.themes) console.warn("Missing themes");
+        if (!musicPrompt.length) console.warn("Missing length");
 
-        if (typeof (musicPrompt.genres) !== "string" || typeof (musicPrompt.moods) !== "string" || typeof (musicPrompt.themes) !== "string" || typeof (musicPrompt.length) !== "number") {
-            console.error("Invalid musicPrompt");
-            return;
-        }
+        if (typeof (musicPrompt.genres) !== "string") console.warn("Invalid genres");
+        if (typeof (musicPrompt.moods) !== "string") console.warn("Invalid moods");
+        if (typeof (musicPrompt.themes) !== "string") console.warn("Invalid themes");
+        if (typeof (musicPrompt.length) !== "number") console.warn("Invalid length");
     }
 
     // Validate voPrompt
     if (voPrompt) {
-        if (!voPrompt.voice || !voPrompt.input) {
-            console.error("Invalid voPrompt");
-            return;
-        }
-
-        if (typeof (voPrompt.voice) !== "string" || typeof (voPrompt.input) !== "string") {
-            console.error("Invalid voPrompt");
-            return;
-        }
+        if (!voPrompt.voice) console.warn("Missing voice");
+        if (!voPrompt.input) console.warn("Missing input");
     }
 
     try {
@@ -49,14 +43,19 @@ export const updateJobComponents = onRequest(async (request, response) => {
         return;
     }
 
-    const components = job.components;
-    const input = job.input;
+    try {
+        const components = job.components;
+        const input = job.input;
 
-    if (musicUrl) components.musicUrl = musicUrl;
-    if (voUrl) components.voUrl = voUrl;
-    if (musicPrompt) input.music.prompt = musicPrompt;
-    if (voPrompt) input.vo.prompt = voPrompt;
+        if (musicUrl) components.musicUrl = musicUrl;
+        if (voUrl) components.voUrl = voUrl;
+        if (musicPrompt) input.music.prompt = musicPrompt;
+        if (voPrompt) input.vo.prompt = voPrompt;
 
-    await jobRef.update({ components });
-    response.status(200).send("Success");
+        await jobRef.update({ components });
+        response.status(200).send("Success");
+    } catch (error) {
+        logger.error("Error updating job components and input! ", error);
+        response.status(500).send("Error updating job components" + error);
+    }
 });

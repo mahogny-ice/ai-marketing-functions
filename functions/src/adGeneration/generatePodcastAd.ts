@@ -102,7 +102,7 @@ export const generatePodcastAd = onRequest(async (request, response) => {
         response.status(200).json({ message: "Started new podcast ad generation job", jobId: job.id });
     } catch (error) {
         logger.error("Error starting new podcast ad generation job", error, { structuredData: true });
-        response.status(500).send("Error: " + error);
+        response.status(500).send("Error setting jobRef" + error);
         return;
     }
 });
