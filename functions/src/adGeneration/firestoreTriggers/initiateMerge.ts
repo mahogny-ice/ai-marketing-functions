@@ -5,7 +5,7 @@ import { firebaseAdmin } from "../../firebase/firebaseInit";
 const mergeAudioAPI = "https://merge-media-dx3v2rbg6q-od.a.run.app/mergeaudio";
 
 interface MergeAudioResponse {
-    url: string;
+    url: string
 }
 
 export const initiateMerge = functions.firestore
@@ -64,8 +64,9 @@ export const initiateMerge = functions.firestore
                             logger.info("mergedAudioData is an array. Picking first element as output URL.");
                             outputUrl = mergedAudioData[0];
                         }
+
                         if (!outputUrl) {
-                            logger.error("Error while merging audio: outputUrl not found");
+                            logger.error("Error while merging audio: outputUrl not found. ", "mergedAudioData.url: ", mergedAudioData.url);
                         } else {
                             logger.info("Output URL:", outputUrl);
                         }
