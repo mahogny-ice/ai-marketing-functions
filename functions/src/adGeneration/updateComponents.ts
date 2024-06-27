@@ -7,8 +7,13 @@ export const updateJobComponents = onRequest(async (request, response) => {
     const { jobId, musicUrl, voUrl, userId, musicPrompt, voPrompt } = request.body;
     let jobRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>;
     let job: GenerationJob;
-    if (!jobId || !userId) {
-        response.status(400).send("Missing jobId or userId");
+
+    if (!userId) {
+        response.status(400).send("Missing userId");
+        return;
+    }
+    if (!jobId) {
+        response.status(400).send("Missing jobId");
         return;
     }
 
@@ -54,8 +59,10 @@ export const updateJobComponents = onRequest(async (request, response) => {
 
         await jobRef.update({ components, input });
         response.status(200).send("Success");
+        return;
     } catch (error) {
         logger.error("Error updating job components and input! ", error);
         response.status(500).send("Error updating job components" + error);
+        return;
     }
 });

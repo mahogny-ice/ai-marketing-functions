@@ -58,7 +58,17 @@ export const initiateMerge = functions.firestore
 
                         const mergedAudioData: MergeAudioResponse = await result.json();
                         logger.info("mergedAudioData: ", mergedAudioData);
-                        const outputUrl = mergedAudioData.url;
+                        let outputUrl = mergedAudioData.url;
+
+                        if (!outputUrl && Array.isArray(mergedAudioData)) {
+                            logger.info("mergedAudioData is an array. Picking first element as output URL.");
+                            outputUrl = mergedAudioData[0];
+                        }
+                        if (!outputUrl) {
+                            logger.error("Error while merging audio: outputUrl not found");
+                        } else {
+                            logger.info("Output URL:", outputUrl);
+                        }
 
                         jobRef.update({ "output": outputUrl });
                         jobRef.update({ "status": "completed" });
