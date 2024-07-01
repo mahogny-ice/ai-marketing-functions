@@ -96,7 +96,10 @@ export const generatePodcastAd = onRequest(async (request, response) => {
     try {
         const jobRef = firebaseAdmin.firestore().collection("users").doc(job.userId).collection("generationJobs").doc(job.id);
 
-        jobRef.set(job);
+        await jobRef.set(job);
+
+        // Start job status check interval
+        checkJobStatus(jobRef);
 
         logger.info("Started new podcast ad generation job: " + job.id);
         response.status(200).json({ message: "Started new podcast ad generation job", jobId: job.id });
@@ -106,3 +109,34 @@ export const generatePodcastAd = onRequest(async (request, response) => {
         return;
     }
 });
+
+const checkJobStatus = async (jobRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>) => {
+    try {
+        let count = 0;
+        const jobData = (await jobRef.get()).data() as GenerationJob;
+
+        const jobCheckInterval = setInterval(async () => {
+            // Make 3 checks (30 seconds) before setting job status to failed
+            count++;
+            if (count < 3) {
+                if (jobData.status === "completed") {
+                    // JOB IS COMPLETED
+                    logger.info("Podcast ad generation job completed: " + jobData.id);
+                    clearInterval(jobCheckInterval);
+                    return;
+                } else {
+                    // JOB IS STILL RUNNING
+                    logger.info("Podcast ad generation job still running: " + jobData.id);
+                    return;
+                }
+            } else {
+                await jobRef.update({ status: "failed" });
+                logger.error("Podcast ad generation job failed: " + jobData.id);
+                clearInterval(jobCheckInterval);
+                return;
+            }
+        }, 10000);
+    } catch (error) {
+        console.error("Error checking job status", error);
+    }
+};
