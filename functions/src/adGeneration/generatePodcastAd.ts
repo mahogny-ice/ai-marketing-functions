@@ -115,26 +115,27 @@ export const generatePodcastAd = onRequest(async (request, response) => {
 const checkJobStatus = async (jobRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>) => {
     try {
         let count = 0;
-        const jobData = (await jobRef.get()).data() as GenerationJob;
 
         const jobCheckInterval = setInterval(async () => {
             // Make 3 checks (30 seconds) before setting job status to failed
             count++;
+            const jobData = (await jobRef.get()).data() as GenerationJob;
+
             if (count < 3) {
                 if (jobData.status === "completed") {
                     // JOB IS COMPLETED
                     logger.info("Podcast ad generation job completed: " + jobData.id);
                     clearInterval(jobCheckInterval);
                     return;
-                } else {
-                    // JOB IS STILL RUNNING
-                    logger.info("Podcast ad generation job still running: " + jobData.id);
+                } else if (count >= 3) {
+                    // Maximum retries reached, mark job as failed
+                    await jobRef.update({ status: "failed" });
+                    logger.error("Podcast ad generation job failed: " + jobData.id);
+                    clearInterval(jobCheckInterval);
                     return;
                 }
             } else {
-                await jobRef.update({ status: "failed" });
-                logger.error("Podcast ad generation job failed: " + jobData.id);
-                clearInterval(jobCheckInterval);
+                logger.info("Podcast ad generation job still running: " + jobData.id);
                 return;
             }
         }, 10000);
