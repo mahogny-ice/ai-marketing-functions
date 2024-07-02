@@ -16,6 +16,7 @@ export type GenerationJob = {
         vo: VoInput;
     }
     output: string;
+    adtitle?: string;
 }
 
 export type PodcastAdComponents = {
@@ -86,6 +87,7 @@ export const generatePodcastAd = onRequest(async (request, response) => {
                 },
             },
             output: "",
+            adtitle: request.body.adtitle || "",
         };
     } catch (error) {
         logger.error("Error generating podcast ad", error, { structuredData: true });
