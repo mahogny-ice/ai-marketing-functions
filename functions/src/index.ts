@@ -4,6 +4,7 @@ import { initiateMerge } from "./adGeneration/firestoreTriggers/initiateMerge";
 import { updateJobComponents } from "./adGeneration/updateComponents";
 import { generateSpeech } from "./apiCalls/generateSpeech";
 import { wakeUpMerger } from "./adGeneration/wakeUpMerger";
+import { setJobStatus } from "./adGeneration/setJobStatus";
 
 export {
     processNewUser,
@@ -12,4 +13,5 @@ export {
     updateJobComponents,
     generateSpeech,
     wakeUpMerger,
+    setJobStatus,
 };

@@ -52,12 +52,14 @@ type VoPrompt = {
 
 export const generatePodcastAd = onRequest(async (request, response) => {
     let job: GenerationJob;
+    const { userId, adtitle } = request.body;
+    const jobId = uuidv4();
 
     try {
         job = {
             createdAt: FieldValue.serverTimestamp(),
-            userId: request.body.userId,
-            id: uuidv4(),
+            userId: userId,
+            id: jobId,
             status: "running",
             type: "podcastAd",
             components: {
@@ -87,7 +89,7 @@ export const generatePodcastAd = onRequest(async (request, response) => {
                 },
             },
             output: "",
-            adtitle: request.body.adtitle || "",
+            adtitle: adtitle || "",
         };
     } catch (error) {
         logger.error("Error generating podcast ad", error, { structuredData: true });
