@@ -4,8 +4,9 @@ import * as logger from "firebase-functions/logger";
 
 export const generateSpeech = onRequest(async (request, response) => {
     const prompt = request.body;
+    logger.info("input prompt", prompt);
     try {
-        const url = await elevenlabsTTS(prompt.input, prompt.voice, prompt.model);
+        const url = await elevenlabsTTS(prompt.voice, prompt.input, prompt.model );
         logger.info("Trying to set url to: ", url);
         response.status(200).json({
             status: "Success",

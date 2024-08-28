@@ -34,12 +34,12 @@ const bucket = admin.storage().bucket("ai-marketing-e2b7e.appspot.com");
  * @throws {Error} Throws an error if the speech generation fails for any reason.
  */
 
-export const elevenlabsTTS = (text: string, model: string, voice: string): Promise<string> => {
+export const elevenlabsTTS = (voice: string, text: string, model: string,): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
         client.generate({
             voice: voice,
-            model_id: model,
             text,
+            model_id: model,
         })
             .then((audio) => {
                 const fileName = `ttsAudio/${uuidv4()}.mp3`;
