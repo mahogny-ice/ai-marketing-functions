@@ -1,12 +1,12 @@
 import { onRequest } from "firebase-functions/v2/https";
-import { openaiTTS } from "./callOpenAi";
-import type { OpenaiInput } from "./callOpenAi";
+import { elevenlabsTTS } from "./callElevenLabs";
 import * as logger from "firebase-functions/logger";
 
 export const generateSpeech = onRequest(async (request, response) => {
-    const prompt = request.body as OpenaiInput;
+    const prompt = request.body;
+    logger.info("input prompt", prompt);
     try {
-        const url = await openaiTTS(prompt);
+        const url = await elevenlabsTTS(prompt.voice, prompt.input, prompt.model );
         logger.info("Trying to set url to: ", url);
         response.status(200).json({
             status: "Success",
