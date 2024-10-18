@@ -51,7 +51,7 @@ export const stripeWebhook = functions.https.onRequest(async (request, response)
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
-        const usersRef = firestore.collection("users");
+        const usersRef = firestore.collection("users/subscription");
         const snapshot = await usersRef.where("stripeCustomerId", "==", stripeCustomerId).get();
 
         if (!snapshot.empty) {

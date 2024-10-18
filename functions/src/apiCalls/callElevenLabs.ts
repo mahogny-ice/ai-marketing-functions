@@ -19,6 +19,17 @@ const client = new ElevenLabsClient({
     apiKey: ELEVENLABS_API_KEY,
 });
 
+/**
+ * Fetches all available voices from the ElevenLabs API and logs them to the console.
+ * @return {Promise<void>} A promise that resolves when the voices have been logged.
+ */
+async function getVoices() {
+    const voices = await client.voices.getAll();
+    console.log("voices:", voices);
+}
+
+getVoices();
+
 const bucket = admin.storage().bucket("ai-marketing-e2b7e.appspot.com");
 
 /**
@@ -63,6 +74,7 @@ export const elevenlabsTTS = (voice: string, text: string, model: string,): Prom
                             action: "read",
                             expires: Date.now() + 2 * 60 * 60 * 1000, // Expires in 2 hours
                         });
+                        logger.info("setting url to:", url);
                         resolve(url);
                     } catch (error) {
                         logger.error("Error generating signed URL:", error);
