@@ -5,6 +5,7 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "dev": "npm run build && firebase emulators:start --only auth,functions,firestore",
+    "dev-populated": "npm run build && firebase emulators:start --import=../firestore_exports/081024/users --only auth,functions,firestore",
     "dev-functions": "npm run build && firebase emulators:start --only functions",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",

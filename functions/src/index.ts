@@ -6,6 +6,7 @@ import { generateSpeech } from "./apiCalls/generateSpeech";
 import { wakeUpMerger } from "./adGeneration/wakeUpMerger";
 import { setJobStatus } from "./adGeneration/setJobStatus";
 import { stripeWebhook } from "./webhooks/stripeHook";
+import { getUserCredits } from "./utils/getUserCredits";
 
 export {
     processNewUser,
@@ -16,4 +17,5 @@ export {
     wakeUpMerger,
     setJobStatus,
     stripeWebhook,
+    getUserCredits,
 };
