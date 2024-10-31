@@ -34,7 +34,6 @@ service cloud.firestore {
     match /newsletter/{documentId} {
       allow read: if false;
       allow create: if 
-        // Validate the document structure
         request.resource.data.keys().hasOnly(['email', 'timestamp']) &&
         request.resource.data.email is string &&
         request.resource.data.email.matches('^[^@]+@[^@]+\\.[^@]+$') && 
