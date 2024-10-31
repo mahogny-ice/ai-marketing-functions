@@ -28,7 +28,8 @@ service cloud.firestore {
       return 
         sub.isSubscribed is bool &&
         sub.credits is number &&
-        sub.subscriptionType is string;
+        sub.subscriptionType is string &&
+        sub.subscriptionType in ['none', 'standard', 'professional'];
     }
 
     match /newsletter/{documentId} {
@@ -64,6 +65,11 @@ service cloud.firestore {
           && isOwner(userId)
           && isValidGenerationJob();
         allow delete: if isAuthenticated() && isOwner(userId);
+      }
+
+      match /subscriptions/{subscriptionId} {
+        allow read: if isAuthenticated() && isOwner(userId);
+        allow create: if isAuthenticated() && isOwner(userId) && isValidSubscription();
       }
     }
 
