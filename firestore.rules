@@ -54,7 +54,11 @@ service cloud.firestore {
       allow update: if isAuthenticated() 
         && isOwner(userId)
         && (!request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['uid', 'email', 'registeredAt']));
+          .hasAny(['uid', 'email', 'registeredAt']))
+        && (
+          !request.resource.data.keys().hasAll(['subscription']) 
+          || isValidSubscription()
+        );
       
       match /generationJobs/{jobId} {
         allow read: if isAuthenticated() && isOwner(userId);
@@ -65,11 +69,6 @@ service cloud.firestore {
           && isOwner(userId)
           && isValidGenerationJob();
         allow delete: if isAuthenticated() && isOwner(userId);
-      }
-
-      match /subscriptions/{subscriptionId} {
-        allow read: if isAuthenticated() && isOwner(userId);
-        allow create: if isAuthenticated() && isOwner(userId) && isValidSubscription();
       }
     }
 
